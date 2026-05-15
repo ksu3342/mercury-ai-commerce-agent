@@ -1,0 +1,46 @@
+{
+  "export_id": "exp_demo_blender_001",
+  "run_id": "run_demo_blender_001",
+  "trace_id": "trc_demo_blender_001",
+  "export_type": "shopify_like_json",
+  "is_real_platform_request": false,
+  "items": [
+    {
+      "sku": "MRC-BLEND-450-WH",
+      "market_id": "US",
+      "language": "en-US",
+      "handle": "mori-portable-blender-450ml-us",
+      "title": "Mori Portable 450 ml USB-C Blender Cup",
+      "vendor": "Mori",
+      "body_html": "<p>The Mori portable blender cup is designed for quick everyday drinks at work, at the gym or on short trips.</p>",
+      "tags": ["portable_blender", "usb_c", "battery", "mock_export"],
+      "metafields": {
+        "capacity_ml": 450,
+        "material": "Tritan",
+        "battery_capacity_mah": 5000,
+        "charger_type": "USB-C"
+      }
+    },
+    {
+      "sku": "MRC-BLEND-450-WH",
+      "market_id": "DE",
+      "language": "de-DE",
+      "handle": "mori-tragbarer-mixer-450ml-de",
+      "title": "Mori tragbarer Mixer 450 ml mit USB-C-Ladung",
+      "vendor": "Mori",
+      "body_html": "<p>Der tragbare Mori Mixer ist fuer schnelle Getraenke im Alltag konzipiert.</p>",
+      "tags": ["tragbarer_mixer", "usb_c", "battery", "mock_export"],
+      "metafields": {
+        "capacity_ml": 450,
+        "material": "Tritan",
+        "battery_capacity_mah": 5000,
+        "charger_type": "USB-C",
+        "responsible_person": {
+          "name": "Demo EU Responsible Person GmbH",
+          "address": "Mockstrasse 1, 10115 Berlin, Germany",
+          "email": "compliance@example.invalid"
+        }
+      }
+    }
+  ]
+}

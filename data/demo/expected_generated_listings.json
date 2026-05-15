@@ -1,0 +1,93 @@
+[
+  {
+    "listing_id": "lst_demo_blender_us",
+    "run_id": "run_demo_blender_001",
+    "trace_id": "trc_demo_blender_001",
+    "sku": "MRC-BLEND-450-WH",
+    "market_id": "US",
+    "language": "en-US",
+    "title": "Mori Portable 450 ml USB-C Blender Cup",
+    "bullet_points": [
+      "450 ml cup for smoothies, juice and protein drinks",
+      "USB-C charging with 5000 mAh battery capacity based on provided SKU data",
+      "Tritan cup and stainless steel blades for everyday drink preparation",
+      "Compact white design for office, gym and travel routines"
+    ],
+    "description": "The Mori portable blender cup is designed for quick everyday drinks at work, at the gym or on short trips. The 450 ml cup, USB-C charging and compact body make it suitable for simple drink preparation. Review battery, material and local compliance fields before publishing.",
+    "seo_keywords": ["portable blender", "usb c blender", "smoothie cup", "travel blender"],
+    "attributes": {
+      "capacity_ml": 450,
+      "material": "Tritan",
+      "battery_capacity_mah": 5000,
+      "charger_type": "USB-C",
+      "color": "white",
+      "blade_material": "stainless_steel"
+    },
+    "claims": [
+      {
+        "claim_id": "clm_us_001",
+        "text": "for smoothies, juice and protein drinks",
+        "claim_type": "usage",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_us_claims_001", "rule_id": "US_UNSUPPORTED_HEALTH_CLAIM", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_battery_001", "rule_id": "BATTERY_CAPACITY_FIELD_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.0.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "qwen3-compatible-demo",
+      "temperature": 0.2
+    },
+    "status": "draft"
+  },
+  {
+    "listing_id": "lst_demo_blender_de",
+    "run_id": "run_demo_blender_001",
+    "trace_id": "trc_demo_blender_001",
+    "sku": "MRC-BLEND-450-WH",
+    "market_id": "DE",
+    "language": "de-DE",
+    "title": "Mori tragbarer Mixer 450 ml mit USB-C-Ladung",
+    "bullet_points": [
+      "450 ml Becher fuer Smoothies, Saefte und einfache Mixgetraenke",
+      "USB-C-Ladung und 5000 mAh Akkukapazitaet gemaess bereitgestellten SKU-Daten",
+      "Tritan-Becher und Edelstahlklingen fuer die taegliche Zubereitung",
+      "Kompaktes weisses Design fuer Buero, Fitnessstudio und kurze Reisen"
+    ],
+    "description": "Der tragbare Mori Mixer ist fuer schnelle Getraenke im Alltag konzipiert. Die Angaben zu Material, Akku und Kapazitaet basieren auf den bereitgestellten Produktdaten. Vor der Veroeffentlichung muessen EU-spezifische Pflichtfelder und lokale Compliance-Hinweise geprueft werden.",
+    "seo_keywords": ["tragbarer mixer", "usb c mixer", "smoothie becher", "mixer fuer unterwegs"],
+    "attributes": {
+      "capacity_ml": 450,
+      "material": "Tritan",
+      "battery_capacity_mah": 5000,
+      "charger_type": "USB-C",
+      "color": "white",
+      "blade_material": "stainless_steel",
+      "responsible_person": null
+    },
+    "claims": [
+      {
+        "claim_id": "clm_de_001",
+        "text": "fuer die taegliche Zubereitung",
+        "claim_type": "usage",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_eu_gpsr_001", "rule_id": "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_food_contact_001", "rule_id": "FOOD_CONTACT_MATERIAL_DISCLOSURE", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.0.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "qwen3-compatible-demo",
+      "temperature": 0.2
+    },
+    "status": "draft"
+  }
+]

@@ -1,0 +1,86 @@
+{
+  "run_id": "run_demo_blender_001",
+  "trace_id": "trc_demo_blender_001",
+  "policy_version": "demo-policy-2026-05",
+  "overall_status": "blocker",
+  "reports": [
+    {
+      "report_id": "rpt_demo_blender_us",
+      "listing_id": "lst_demo_blender_us",
+      "market_id": "US",
+      "overall_status": "warning",
+      "score": 88,
+      "policy_version": "demo-policy-2026-05",
+      "retrieved_chunks": [
+        {"chunk_id": "policy_battery_001", "rule_id": "BATTERY_CAPACITY_FIELD_REQUIRED", "source": "mock_policy_pack", "score": 0.82},
+        {"chunk_id": "policy_us_claims_001", "rule_id": "US_UNSUPPORTED_HEALTH_CLAIM", "source": "mock_policy_pack", "score": 0.89}
+      ],
+      "checks": [
+        {
+          "check_id": "chk_us_battery_capacity",
+          "rule_id": "BATTERY_CAPACITY_FIELD_REQUIRED",
+          "status": "passed",
+          "severity": "warning",
+          "message": "Battery capacity and charger type are preserved in structured attributes.",
+          "evidence": {"battery_capacity_mah": 5000, "charger_type": "USB-C"},
+          "suggested_fix": null
+        },
+        {
+          "check_id": "chk_us_health_claim",
+          "rule_id": "US_UNSUPPORTED_HEALTH_CLAIM",
+          "status": "passed",
+          "severity": "blocker",
+          "message": "No treatment, weight-loss, or guaranteed health outcome claim was found.",
+          "evidence": {"matched_terms": []},
+          "suggested_fix": null
+        }
+      ],
+      "validator_result": {
+        "json_schema_passed": true,
+        "deterministic_validators_passed": true,
+        "failed_validator_count": 0,
+        "warning_count": 1,
+        "blocker_count": 0
+      }
+    },
+    {
+      "report_id": "rpt_demo_blender_de",
+      "listing_id": "lst_demo_blender_de",
+      "market_id": "DE",
+      "overall_status": "blocker",
+      "score": 74,
+      "policy_version": "demo-policy-2026-05",
+      "retrieved_chunks": [
+        {"chunk_id": "policy_eu_gpsr_001", "rule_id": "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED", "source": "mock_policy_pack", "score": 0.94},
+        {"chunk_id": "policy_food_contact_001", "rule_id": "FOOD_CONTACT_MATERIAL_DISCLOSURE", "source": "mock_policy_pack", "score": 0.86}
+      ],
+      "checks": [
+        {
+          "check_id": "chk_de_responsible_person",
+          "rule_id": "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED",
+          "status": "failed",
+          "severity": "blocker",
+          "message": "DE/EU market is missing responsible_person.",
+          "evidence": {"field": "attributes.responsible_person", "value": null},
+          "suggested_fix": "Add EU responsible person information. Demo may use mock company information."
+        },
+        {
+          "check_id": "chk_de_food_contact_tone",
+          "rule_id": "FOOD_CONTACT_MATERIAL_DISCLOSURE",
+          "status": "warning",
+          "severity": "warning",
+          "message": "Food contact material language should stay factual and avoid absolute safety guarantees.",
+          "evidence": {"claim": "Tritan-Becher und Edelstahlklingen fuer die taegliche Zubereitung"},
+          "suggested_fix": "Keep material facts and avoid 100% safe or medically safe wording."
+        }
+      ],
+      "validator_result": {
+        "json_schema_passed": true,
+        "deterministic_validators_passed": false,
+        "failed_validator_count": 1,
+        "warning_count": 1,
+        "blocker_count": 1
+      }
+    }
+  ]
+}

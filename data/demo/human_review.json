@@ -1,0 +1,39 @@
+{
+  "review_id": "rev_demo_blender_de",
+  "run_id": "run_demo_blender_001",
+  "trace_id": "trc_demo_blender_001",
+  "listing_id": "lst_demo_blender_de",
+  "reviewer_id": "reviewer_demo_01",
+  "decision": "changes_requested",
+  "comments": "Add EU responsible_person and keep food-contact material wording factual.",
+  "edited_listing": {
+    "title": "Mori tragbarer Mixer 450 ml mit USB-C-Ladung",
+    "bullet_points": [
+      "450 ml Becher fuer Smoothies, Saefte und einfache Mixgetraenke",
+      "USB-C-Ladung und 5000 mAh Akkukapazitaet gemaess bereitgestellten SKU-Daten",
+      "Tritan-Becher und Edelstahlklingen; Materialangaben vor Veroeffentlichung pruefen",
+      "Kompaktes weisses Design fuer Buero, Fitnessstudio und kurze Reisen"
+    ],
+    "attributes": {
+      "responsible_person": {
+        "name": "Demo EU Responsible Person GmbH",
+        "address": "Mockstrasse 1, 10115 Berlin, Germany",
+        "email": "compliance@example.invalid"
+      }
+    }
+  },
+  "edit_summary": {
+    "title_changed": false,
+    "bullet_points_changed": true,
+    "description_changed": false,
+    "attributes_changed": true,
+    "estimated_edit_rate": 0.16
+  },
+  "human_review_result": {
+    "quality_score": 4,
+    "compliance_confidence": "medium",
+    "needs_regeneration": false,
+    "failure_tags": ["missing_required_field", "claim_too_broad"]
+  },
+  "reviewed_at": "2026-05-15T10:15:00Z"
+}
