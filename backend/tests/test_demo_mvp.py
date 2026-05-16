@@ -32,6 +32,36 @@ def test_demo_run_success():
     assert "/runs/run_demo_blender_001" in body["links"]["run_detail"]
 
 
+def test_demo_run_unsupported_market_returns_400():
+    client = TestClient(app)
+
+    response = client.post(
+        "/runs/demo",
+        json={
+            "sku": "MRC-BLEND-450-WH",
+            "target_markets": ["US", "FR"],
+            "target_languages": ["en-US", "fr-FR"],
+        },
+    )
+
+    assert response.status_code == 400
+
+
+def test_demo_run_language_market_length_mismatch_returns_422_or_400():
+    client = TestClient(app)
+
+    response = client.post(
+        "/runs/demo",
+        json={
+            "sku": "MRC-BLEND-450-WH",
+            "target_markets": ["US", "DE"],
+            "target_languages": ["en-US"],
+        },
+    )
+
+    assert response.status_code in {400, 422}
+
+
 def test_policy_retriever_returns_canonical_rule_ids():
     repo = DemoDataRepository()
     product = repo.get_product_by_sku("MRC-BLEND-450-WH")
@@ -114,3 +144,124 @@ def test_review_submit_updates_run():
     run_body = run_response.json()
     assert run_body["human_review"]["review_id"] == "rev_demo_blender_de"
     assert run_body["human_review"]["human_review_result"]["needs_regeneration"] is False
+
+
+def test_review_changes_requested_does_not_export():
+    client = TestClient(app)
+    client.post("/runs/demo", json=DEMO_REQUEST)
+    project_root = Path(__file__).resolve().parents[2]
+    review_payload = json.loads(
+        (project_root / "data" / "demo" / "human_review.json").read_text(encoding="utf-8")
+    )
+
+    response = client.post("/reviews/submit", json=review_payload)
+    run_body = client.get("/runs/run_demo_blender_001").json()
+
+    assert response.status_code == 200
+    assert run_body["export_payload"]["status"] in {"not_exported", "revision_required"}
+    assert run_body["export_payload"]["is_real_platform_request"] is False
+
+
+def test_review_approved_with_blocker_returns_400():
+    client = TestClient(app)
+    client.post("/runs/demo", json=DEMO_REQUEST)
+
+    response = client.post(
+        "/reviews/submit",
+        json={
+            "run_id": "run_demo_blender_001",
+            "listing_id": "lst_demo_blender_de",
+            "reviewer_id": "reviewer_demo_01",
+            "decision": "approved",
+            "human_review_result": {
+                "quality_score": 5,
+                "compliance_confidence": "high",
+                "needs_regeneration": False,
+                "failure_tags": [],
+            },
+        },
+    )
+
+    assert response.status_code == 400
+
+
+def test_rule_engine_battery_fields_pass_when_present():
+    reports = _demo_reports()
+
+    battery_checks = [
+        issue
+        for report in reports
+        for issue in report.checks
+        if issue.rule_id == "BATTERY_CAPACITY_FIELD_REQUIRED"
+    ]
+
+    assert battery_checks
+    assert all(issue.status == "passed" for issue in battery_checks)
+
+
+def test_rule_engine_forbidden_terms_checked_for_de():
+    repo = DemoDataRepository()
+    product = repo.get_product_by_sku("MRC-BLEND-450-WH")
+    de_listing = _demo_listing("DE").model_copy(
+        update={"description": "Dieses Produkt ist 100 percent safe."},
+        deep=True,
+    )
+
+    report = RuleEngine(
+        policy_rules=repo.get_policy_rules(),
+        market_configs=repo.get_market_configs(),
+    ).check(product=product, listings=[de_listing])[0]
+
+    forbidden_checks = [
+        issue for issue in report.checks if "100 percent safe" in issue.evidence.get("matched_terms", [])
+    ]
+    assert forbidden_checks
+    assert forbidden_checks[0].status == "failed"
+
+
+def test_rule_engine_brand_term_missing_warns():
+    repo = DemoDataRepository()
+    product = repo.get_product_by_sku("MRC-BLEND-450-WH")
+    us_listing = _demo_listing("US").model_copy(
+        update={"title": "Portable 450 ml USB-C Blender Cup"},
+        deep=True,
+    )
+
+    report = RuleEngine(
+        policy_rules=repo.get_policy_rules(),
+        market_configs=repo.get_market_configs(),
+    ).check(product=product, listings=[us_listing])[0]
+
+    brand_checks = [
+        issue for issue in report.checks if issue.rule_id == "BRAND_TERM_DO_NOT_TRANSLATE"
+    ]
+    assert brand_checks
+    assert brand_checks[0].status == "warning"
+
+
+def test_report_id_uses_sku_not_hardcoded_blender():
+    report = next(report for report in _demo_reports() if report.market_id == "DE")
+
+    assert report.report_id == "rpt_mrc_blend_450_wh_de"
+    assert "demo_blender" not in report.report_id
+
+
+def _demo_listing(market_id):
+    repo = DemoDataRepository()
+    return next(listing for listing in repo.get_expected_listings() if listing.market_id == market_id)
+
+
+def _demo_reports():
+    repo = DemoDataRepository()
+    product = repo.get_product_by_sku("MRC-BLEND-450-WH")
+    generator = MockListingGenerator(repo)
+    listings = generator.generate(
+        product=product,
+        target_markets=["US", "DE"],
+        target_languages=["en-US", "de-DE"],
+        retrieved_chunks=repo.get_rag_chunks(),
+    )
+    return RuleEngine(
+        policy_rules=repo.get_policy_rules(),
+        market_configs=repo.get_market_configs(),
+    ).check(product=product, listings=listings)

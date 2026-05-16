@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 def utc_now_iso() -> str:
@@ -227,6 +227,12 @@ class DemoRunRequest(StrictBaseModel):
         if not value:
             raise ValueError("target list must not be empty")
         return value
+
+    @model_validator(mode="after")
+    def targets_must_align(self) -> "DemoRunRequest":
+        if len(self.target_markets) != len(self.target_languages):
+            raise ValueError("target_markets and target_languages must have the same length")
+        return self
 
 
 class ReviewSubmitRequest(StrictBaseModel):

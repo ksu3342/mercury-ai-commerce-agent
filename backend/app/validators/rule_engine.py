@@ -36,6 +36,7 @@ class RuleEngine:
         checks.extend(self._check_required_fields(product, listing, market))
         checks.append(self._check_title_length(listing, market))
         checks.extend(self._check_forbidden_terms(listing, market))
+        checks.extend(self._check_brand_term_preserved(product, listing))
         checks.extend(self._check_battery_fields(product, listing))
         checks.extend(self._check_food_contact(product, listing))
         checks.extend(self._check_unit_consistency(product, listing))
@@ -51,7 +52,7 @@ class RuleEngine:
         policy_version = market.compliance_profile.get("policy_version", "unknown")
 
         return ComplianceReport(
-            report_id=f"rpt_demo_blender_{listing.market_id.lower()}",
+            report_id=f"rpt_{self._normalize_id(product.sku)}_{listing.market_id.lower()}",
             run_id=listing.run_id,
             trace_id=listing.trace_id,
             listing_id=listing.listing_id,
@@ -124,30 +125,64 @@ class RuleEngine:
         listing: GeneratedListing,
         market: MarketConfig,
     ) -> List[ComplianceIssue]:
-        if listing.market_id != "US":
+        risky_terms = {self._claim_term(term) for term in market.forbidden_claims}
+        risky_terms.update(term.replace("_", " ") for term in market.forbidden_claims)
+        risky_terms.discard("")
+        if listing.market_id == "US":
+            risky_terms.update({"cure", "treat", "guaranteed healthy", "100% safe"})
+
+        if not risky_terms:
             return []
 
-        risky_terms = {"cure", "treat", "guaranteed healthy", "100% safe"}
         risky_terms.update(term.replace("_", " ") for term in market.forbidden_claims)
-        text = self._listing_text(listing).lower()
+        text = self._listing_text(listing).lower().replace("%", " percent")
         matched = sorted(term for term in risky_terms if term in text)
 
+        if listing.market_id != "US" and not matched:
+            return []
+
         status = "failed" if matched else "passed"
+        rule_id = (
+            "US_UNSUPPORTED_HEALTH_CLAIM"
+            if listing.market_id == "US"
+            else "MARKET_FORBIDDEN_CLAIM"
+        )
         return [
             ComplianceIssue(
-                issue_id=f"chk_{listing.market_id.lower()}_unsupported_health_claim",
-                rule_id="US_UNSUPPORTED_HEALTH_CLAIM",
+                issue_id=f"chk_{listing.market_id.lower()}_forbidden_claim",
+                rule_id=rule_id,
                 status=status,
                 severity="blocker",
                 message=(
-                    "Unsupported health or medical claim was found."
+                    "Forbidden or unsupported claim was found."
                     if matched
-                    else "No unsupported health or medical claim was found."
+                    else "No forbidden or unsupported claim was found."
                 ),
                 evidence={"matched_terms": matched},
-                suggestion="Remove medical, treatment, or guaranteed outcome language."
+                suggestion="Remove medical, treatment, safety guarantee, or weight-loss language."
                 if matched
                 else None,
+            )
+        ]
+
+    def _check_brand_term_preserved(
+        self,
+        product: ProductInput,
+        listing: GeneratedListing,
+    ) -> List[ComplianceIssue]:
+        if not product.brand:
+            return []
+        if product.brand in listing.title:
+            return []
+        return [
+            ComplianceIssue(
+                issue_id=f"chk_{listing.market_id.lower()}_brand_term",
+                rule_id="BRAND_TERM_DO_NOT_TRANSLATE",
+                status="warning",
+                severity="warning",
+                message="Brand term is missing from the listing title.",
+                evidence={"brand": product.brand, "title": listing.title},
+                suggestion=f"Keep brand term {product.brand} exactly as provided.",
             )
         ]
 
@@ -168,7 +203,7 @@ class RuleEngine:
             ComplianceIssue(
                 issue_id=f"chk_{listing.market_id.lower()}_battery_fields",
                 rule_id="BATTERY_CAPACITY_FIELD_REQUIRED",
-                status="warning" if not missing else "failed",
+                status="passed" if not missing else "failed",
                 severity="warning",
                 message=(
                     "Battery capacity and charger type are preserved in structured attributes."
@@ -285,3 +320,9 @@ class RuleEngine:
         if isinstance(value, str) and not value.strip():
             return False
         return True
+
+    def _claim_term(self, term: str) -> str:
+        return term.lower().replace("_", " ").replace("%", " percent").strip()
+
+    def _normalize_id(self, value: str) -> str:
+        return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")

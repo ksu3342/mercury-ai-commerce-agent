@@ -14,6 +14,7 @@ from app.workflow import DemoWorkflow
 
 
 router = APIRouter()
+SUPPORTED_MARKET_LANGUAGES = {"US": "en-US", "DE": "de-DE"}
 
 repository = DemoDataRepository()
 run_store = InMemoryRunStore()
@@ -25,6 +26,7 @@ workflow = DemoWorkflow(repository, run_store, retriever, generator, rule_engine
 
 @router.post("/runs/demo")
 def create_demo_run(request: DemoRunRequest) -> Dict[str, Any]:
+    _validate_demo_scope(request)
     try:
         run = workflow.run(request)
     except KeyError as exc:
@@ -69,6 +71,12 @@ def submit_review(request: ReviewSubmitRequest) -> Dict[str, Any]:
     )
     if not listing:
         raise HTTPException(status_code=404, detail=f"Listing not found: {request.listing_id}")
+
+    if request.decision == "approved" and _run_has_blockers(run.compliance_report):
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot approve a run with compliance blockers in 4A MVP. Rerun compliance is not implemented.",
+        )
 
     review = HumanReview(
         review_id=request.review_id or f"rev_{request.listing_id}",
@@ -136,6 +144,42 @@ def _compliance_summary(reports: List[Any]) -> Dict[str, Any]:
     }
 
 
+def _validate_demo_scope(request: DemoRunRequest) -> None:
+    unsupported_markets = [
+        market for market in request.target_markets if market not in SUPPORTED_MARKET_LANGUAGES
+    ]
+    unsupported_languages = [
+        language
+        for language in request.target_languages
+        if language not in SUPPORTED_MARKET_LANGUAGES.values()
+    ]
+    if unsupported_markets:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported market for 4A MVP: {', '.join(unsupported_markets)}",
+        )
+    if unsupported_languages:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported language for 4A MVP: {', '.join(unsupported_languages)}",
+        )
+
+    invalid_pairs = [
+        f"{market}/{language}"
+        for market, language in zip(request.target_markets, request.target_languages)
+        if SUPPORTED_MARKET_LANGUAGES[market] != language
+    ]
+    if invalid_pairs:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported market/language pair for 4A MVP: {', '.join(invalid_pairs)}",
+        )
+
+
+def _run_has_blockers(reports: List[Any]) -> bool:
+    return any(report.validator_result.get("blocker_count", 0) > 0 for report in reports)
+
+
 def _estimate_edit_summary(original_listing: Dict[str, Any], edited_listing: Any) -> Dict[str, Any]:
     edited = edited_listing or {}
     title_changed = "title" in edited and edited.get("title") != original_listing.get("title")
@@ -169,13 +213,21 @@ def _review_next_actions(decision: str) -> List[str]:
 
 
 def _export_after_review(review: HumanReview) -> Dict[str, Any]:
+    if review.decision == "approved":
+        payload = repository.get_export_payload()
+        payload["is_real_platform_request"] = False
+        payload["status"] = "mock_export_payload_after_review"
+        return payload
+    if review.decision == "changes_requested":
+        return {
+            "is_real_platform_request": False,
+            "status": "revision_required",
+            "reason": "review requested changes before mock export",
+        }
     if review.decision == "rejected":
         return {
             "is_real_platform_request": False,
             "status": "not_exported",
             "reason": "review rejected",
         }
-    payload = repository.get_export_payload()
-    payload["is_real_platform_request"] = False
-    payload["status"] = "mock_export_payload_after_review"
-    return payload
+    return {"is_real_platform_request": False, "status": "not_exported"}

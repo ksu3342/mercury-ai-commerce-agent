@@ -4,7 +4,18 @@ Mercury 是一个 Portfolio PoC / Business Simulation Project，用于展示多�
 
 ## 当前阶段
 
-当前项目包含设计文档和最小样例数据集，尚未包含后端业务代码、前端 Demo 或真实平台集成。
+当前项目已经完成：
+
+- 设计文档；
+- `data/demo` 最小样例数据集；
+- `backend` 4A MVP，用 FastAPI 跑通 demo workflow、mock retrieval、mock listing、deterministic rule engine、human review 和 run trace。
+
+当前暂未包含：
+
+- 前端 Demo；
+- 真实 LLM 接入；
+- 真实向量库；
+- 真实 Shopify、Google Merchant、Amazon 等平台 API 接入。
 
 ## 目录结构
 
@@ -38,16 +49,23 @@ data/
     export.csv
     shopify_like_payload.json
     run_record.json
+
+backend/
+  app/
+  tests/
+  requirements.txt
+  README.md
 ```
 
 ## 边界说明
 
 - 不包含真实 Shopify、Google Merchant、Amazon 等平台 API 接入。
+- 不包含真实 LLM 或真实向量库接入。
 - 不包含真实客户数据。
 - 不声明真实业务收益。
 
 ## 后续计划
 
-- 后端 MVP
 - 前端 Demo
+- 后端 MVP 下一阶段
 - 面试讲稿
