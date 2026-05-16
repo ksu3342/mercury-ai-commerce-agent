@@ -1,0 +1,20 @@
+[
+  {
+    "term": "Mori",
+    "term_type": "brand",
+    "translation_policy": "do_not_translate",
+    "allowed_forms": ["Mori"]
+  },
+  {
+    "term": "Tritan",
+    "term_type": "material",
+    "translation_policy": "preserve",
+    "allowed_forms": ["Tritan"]
+  },
+  {
+    "term": "USB-C",
+    "term_type": "specification",
+    "translation_policy": "preserve",
+    "allowed_forms": ["USB-C"]
+  }
+]

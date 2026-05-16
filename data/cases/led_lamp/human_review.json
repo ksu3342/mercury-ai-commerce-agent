@@ -1,0 +1,34 @@
+{
+  "review_id": "rev_demo_led_lamp_us",
+  "run_id": "run_demo_mrc_lamp_led_001",
+  "trace_id": "trc_demo_mrc_lamp_led_001",
+  "listing_id": "lst_demo_led_lamp_us",
+  "reviewer_id": "reviewer_demo_01",
+  "decision": "changes_requested",
+  "comments": "Add verified power_watt and remove risk-free safety wording before approval.",
+  "edited_listing": {
+    "bullet_points": [
+      "Adjustable LED desk lamp for focused desk work",
+      "Three dimming levels based on provided product data",
+      "Aluminum and ABS body in a compact white design",
+      "Electrical rating must be verified before publication"
+    ],
+    "attributes": {
+      "power_watt": "missing"
+    }
+  },
+  "edit_summary": {
+    "title_changed": false,
+    "bullet_points_changed": true,
+    "description_changed": false,
+    "attributes_changed": true,
+    "estimated_edit_rate": 0.5
+  },
+  "human_review_result": {
+    "quality_score": 3,
+    "compliance_confidence": "medium",
+    "needs_regeneration": true,
+    "failure_tags": ["missing_required_field", "unsupported_safety_claim"]
+  },
+  "reviewed_at": "2026-05-16T10:15:00Z"
+}

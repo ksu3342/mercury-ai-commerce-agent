@@ -214,7 +214,8 @@ def _review_next_actions(decision: str) -> List[str]:
 
 def _export_after_review(review: HumanReview) -> Dict[str, Any]:
     if review.decision == "approved":
-        payload = repository.get_export_payload()
+        run = run_store.get(review.run_id)
+        payload = repository.get_export_payload(run.product_input.sku)
         payload["is_real_platform_request"] = False
         payload["status"] = "mock_export_payload_after_review"
         return payload

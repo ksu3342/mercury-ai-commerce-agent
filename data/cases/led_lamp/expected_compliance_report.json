@@ -1,0 +1,34 @@
+{
+  "run_id": "run_demo_mrc_lamp_led_001",
+  "trace_id": "trc_demo_mrc_lamp_led_001",
+  "policy_version": "demo-policy-2026-05",
+  "overall_status": "blocker",
+  "reports": [
+    {
+      "report_id": "rpt_mrc_lamp_led_001_us",
+      "listing_id": "lst_demo_led_lamp_us",
+      "market_id": "US",
+      "overall_status": "blocker",
+      "checks": [
+        {
+          "check_id": "chk_us_electrical_power",
+          "rule_id": "ELECTRICAL_POWER_FIELD_REQUIRED",
+          "status": "failed",
+          "severity": "blocker",
+          "message": "power_watt is missing from the LED lamp listing.",
+          "evidence": {"missing_fields": ["power_watt"]},
+          "suggested_fix": "Add the verified power_watt from source product data."
+        },
+        {
+          "check_id": "chk_us_safety_claim",
+          "rule_id": "SAFETY_CLAIM_NEEDS_EVIDENCE",
+          "status": "failed",
+          "severity": "blocker",
+          "message": "Risk-free safety wording is unsupported.",
+          "evidence": {"matched_terms": ["risk-free"]},
+          "suggested_fix": "Remove absolute safety wording or attach approved evidence."
+        }
+      ]
+    }
+  ]
+}

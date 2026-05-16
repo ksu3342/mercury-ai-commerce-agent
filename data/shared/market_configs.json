@@ -1,0 +1,48 @@
+[
+  {
+    "market_id": "US",
+    "region": "NA",
+    "country_code": "US",
+    "language": "en-US",
+    "currency": "USD",
+    "unit_system": "metric",
+    "platform": "shopify_mock",
+    "required_attributes": ["material"],
+    "forbidden_claims": ["medical_cure", "guaranteed_weight_loss", "100_percent_safe"],
+    "locale_rules": {
+      "max_title_length": 150,
+      "measurement_units": ["ml", "g", "W", "V"]
+    },
+    "compliance_profile": {
+      "policy_version": "demo-policy-2026-05",
+      "rule_sets": ["us_claims_demo", "electrical_fields_demo", "title_length_demo"]
+    },
+    "export_profile": {
+      "format": "shopify_like_json",
+      "required_fields": ["title", "body_html", "vendor", "tags", "metafields"]
+    }
+  },
+  {
+    "market_id": "DE",
+    "region": "EU",
+    "country_code": "DE",
+    "language": "de-DE",
+    "currency": "EUR",
+    "unit_system": "metric",
+    "platform": "shopify_mock",
+    "required_attributes": ["material", "responsible_person"],
+    "forbidden_claims": ["medical_cure", "guaranteed_weight_loss", "100_percent_safe"],
+    "locale_rules": {
+      "max_title_length": 140,
+      "measurement_units": ["ml", "g", "W", "V"]
+    },
+    "compliance_profile": {
+      "policy_version": "demo-policy-2026-05",
+      "rule_sets": ["eu_gpsr_demo", "electrical_fields_demo", "title_length_demo"]
+    },
+    "export_profile": {
+      "format": "shopify_like_json",
+      "required_fields": ["title", "body_html", "vendor", "tags", "metafields"]
+    }
+  }
+]

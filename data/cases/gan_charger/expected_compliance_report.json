@@ -1,0 +1,25 @@
+{
+  "run_id": "run_demo_mrc_charger_65w",
+  "trace_id": "trc_demo_mrc_charger_65w",
+  "policy_version": "demo-policy-2026-05",
+  "overall_status": "blocker",
+  "reports": [
+    {
+      "report_id": "rpt_mrc_charger_65w_us",
+      "listing_id": "lst_demo_gan_charger_us",
+      "market_id": "US",
+      "overall_status": "warning",
+      "checks": [
+        {
+          "check_id": "chk_us_compatibility_scope",
+          "rule_id": "COMPATIBILITY_CLAIM_NEEDS_SCOPE",
+          "status": "warning",
+          "severity": "warning",
+          "message": "Broad compatibility claim needs a supported scope.",
+          "evidence": {"matched_terms": ["works with all devices"]},
+          "suggested_fix": "Replace all-device language with supported protocols or example device families."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "export_id": "exp_demo_gan_charger_001",
+  "run_id": "run_demo_mrc_charger_65w",
+  "trace_id": "trc_demo_mrc_charger_65w",
+  "export_type": "shopify_like_json",
+  "is_real_platform_request": false,
+  "status": "adapter_payload_draft",
+  "items": [
+    {
+      "sku": "MRC-CHARGER-65W",
+      "market_id": "US",
+      "language": "en-US",
+      "handle": "mori-65w-usb-c-gan-charger-us",
+      "title": "Mori 65W USB-C GaN Charger with Dual Ports",
+      "vendor": "Mori",
+      "body_html": "<p>Draft adapter payload only. Not a Shopify Admin API request.</p>",
+      "tags": ["gan_charger", "usb_c", "electrical", "mock_export"],
+      "metafields": {
+        "power_watt": 65,
+        "input_voltage": "100-240V",
+        "output_voltage": "5V/9V/12V/15V/20V"
+      }
+    }
+  ]
+}

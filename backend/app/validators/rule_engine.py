@@ -38,6 +38,9 @@ class RuleEngine:
         checks.extend(self._check_forbidden_terms(listing, market))
         checks.extend(self._check_brand_term_preserved(product, listing))
         checks.extend(self._check_battery_fields(product, listing))
+        checks.extend(self._check_electrical_power_fields(product, listing))
+        checks.extend(self._check_compatibility_claim_scope(product, listing))
+        checks.extend(self._check_safety_claims(product, listing))
         checks.extend(self._check_food_contact(product, listing))
         checks.extend(self._check_unit_consistency(product, listing))
         checks.extend(self._check_rule_references(listing))
@@ -255,6 +258,94 @@ class RuleEngine:
             )
         ]
 
+    def _check_electrical_power_fields(
+        self,
+        product: ProductInput,
+        listing: GeneratedListing,
+    ) -> List[ComplianceIssue]:
+        if not self._is_electrical_product(product):
+            return []
+
+        required_fields = ["power_watt"]
+        if product.category_hint == "consumer_electronics":
+            required_fields.extend(["input_voltage", "output_voltage"])
+        missing = [
+            field for field in required_fields if not self._value_exists(listing.attributes.get(field))
+        ]
+        rule = self.policy_rules.get("ELECTRICAL_POWER_FIELD_REQUIRED")
+        return [
+            ComplianceIssue(
+                issue_id=f"chk_{listing.market_id.lower()}_electrical_power",
+                rule_id="ELECTRICAL_POWER_FIELD_REQUIRED",
+                status="passed" if not missing else "failed",
+                severity=rule.severity if rule else "blocker",
+                message=(
+                    "Electrical power fields are preserved in structured attributes."
+                    if not missing
+                    else "Electrical power fields are missing from structured attributes."
+                ),
+                evidence={
+                    "power_watt": listing.attributes.get("power_watt"),
+                    "input_voltage": listing.attributes.get("input_voltage"),
+                    "output_voltage": listing.attributes.get("output_voltage"),
+                    "missing_fields": missing,
+                },
+                suggestion=(rule.remediation if rule else "Add verified electrical rating fields."),
+            )
+        ]
+
+    def _check_compatibility_claim_scope(
+        self,
+        product: ProductInput,
+        listing: GeneratedListing,
+    ) -> List[ComplianceIssue]:
+        if "compatibility_claim" not in product.regulatory_tags:
+            return []
+
+        terms = ["works with all devices", "compatible with every device", "universal for all"]
+        text = self._listing_text(listing).lower()
+        matched = sorted(term for term in terms if term in text)
+        if not matched:
+            return []
+        rule = self.policy_rules.get("COMPATIBILITY_CLAIM_NEEDS_SCOPE")
+        return [
+            ComplianceIssue(
+                issue_id=f"chk_{listing.market_id.lower()}_compatibility_scope",
+                rule_id="COMPATIBILITY_CLAIM_NEEDS_SCOPE",
+                status="warning",
+                severity=rule.severity if rule else "warning",
+                message="Broad compatibility claim needs a supported scope.",
+                evidence={"matched_terms": matched},
+                suggestion=(rule.remediation if rule else "Scope compatibility claim to supported devices."),
+            )
+        ]
+
+    def _check_safety_claims(
+        self,
+        product: ProductInput,
+        listing: GeneratedListing,
+    ) -> List[ComplianceIssue]:
+        if not self._is_electrical_product(product) and "safety_claim" not in product.regulatory_tags:
+            return []
+
+        terms = ["100 percent safe", "100% safe", "guaranteed safe", "risk-free"]
+        text = self._listing_text(listing).lower().replace("%", " percent")
+        matched = sorted(term for term in terms if term in text)
+        if not matched:
+            return []
+        rule = self.policy_rules.get("SAFETY_CLAIM_NEEDS_EVIDENCE")
+        return [
+            ComplianceIssue(
+                issue_id=f"chk_{listing.market_id.lower()}_safety_claim",
+                rule_id="SAFETY_CLAIM_NEEDS_EVIDENCE",
+                status="failed",
+                severity=rule.severity if rule else "blocker",
+                message="Absolute safety claim needs evidence before approval.",
+                evidence={"matched_terms": matched},
+                suggestion=(rule.remediation if rule else "Remove unsupported safety wording."),
+            )
+        ]
+
     def _check_unit_consistency(
         self,
         product: ProductInput,
@@ -304,6 +395,8 @@ class RuleEngine:
             return "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED"
         if field in {"battery_capacity_mah", "charger_type"}:
             return "BATTERY_CAPACITY_FIELD_REQUIRED"
+        if field in {"power_watt", "input_voltage", "output_voltage"}:
+            return "ELECTRICAL_POWER_FIELD_REQUIRED"
         return "REQUIRED_FIELD_PRESENT"
 
     def _listing_text(self, listing: GeneratedListing) -> str:
@@ -326,3 +419,10 @@ class RuleEngine:
 
     def _normalize_id(self, value: str) -> str:
         return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")
+
+    def _is_electrical_product(self, product: ProductInput) -> bool:
+        return (
+            product.category_hint in {"home_lighting", "consumer_electronics"}
+            or "electrical_safety" in product.regulatory_tags
+            or "power_rating" in product.regulatory_tags
+        )

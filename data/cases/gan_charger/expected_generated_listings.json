@@ -1,0 +1,96 @@
+[
+  {
+    "listing_id": "lst_demo_gan_charger_us",
+    "run_id": "run_demo_mrc_charger_65w",
+    "trace_id": "trc_demo_mrc_charger_65w",
+    "sku": "MRC-CHARGER-65W",
+    "market_id": "US",
+    "language": "en-US",
+    "title": "Mori 65W USB-C GaN Charger with Dual Ports",
+    "bullet_points": [
+      "65W GaN charger draft based on provided product attributes",
+      "USB-C output supports listed voltage profiles from source data",
+      "Compact white polycarbonate body for desk and travel charging",
+      "Works with all devices claim must be scoped before approval"
+    ],
+    "description": "The Mori 65W USB-C GaN charger draft preserves input voltage, output voltage and power rating fields. Broad compatibility language needs reviewer scope before any platform export.",
+    "seo_keywords": ["65w gan charger", "usb c charger", "dual port charger"],
+    "attributes": {
+      "material": "polycarbonate",
+      "power_watt": 65,
+      "input_voltage": "100-240V",
+      "output_voltage": "5V/9V/12V/15V/20V",
+      "charger_type": "USB-C",
+      "ports": 2,
+      "color": "white"
+    },
+    "claims": [
+      {
+        "claim_id": "clm_charger_us_001",
+        "text": "works with all devices",
+        "claim_type": "compatibility",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_electrical_power_001", "rule_id": "ELECTRICAL_POWER_FIELD_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_compatibility_scope_001", "rule_id": "COMPATIBILITY_CLAIM_NEEDS_SCOPE", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.1.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "expected-listing-fixture",
+      "temperature": 0.0
+    },
+    "status": "draft"
+  },
+  {
+    "listing_id": "lst_demo_gan_charger_de",
+    "run_id": "run_demo_mrc_charger_65w",
+    "trace_id": "trc_demo_mrc_charger_65w",
+    "sku": "MRC-CHARGER-65W",
+    "market_id": "DE",
+    "language": "de-DE",
+    "title": "Mori 65W USB-C GaN-Ladegeraet mit zwei Anschluessen",
+    "bullet_points": [
+      "65W GaN-Ladegeraet als Entwurf aus bereitgestellten Produktdaten",
+      "USB-C-Ausgang mit angegebenen Spannungsprofilen",
+      "Kompaktes weisses Gehaeuse aus Polycarbonat",
+      "Kompatibilitaetsaussagen muessen auf konkrete Geraete oder Protokolle begrenzt werden"
+    ],
+    "description": "Der Mori 65W USB-C GaN-Ladegeraet-Entwurf bewahrt Eingangs- und Ausgangsspannung sowie Leistungsangabe. Die EU responsible_person fehlt und muss vor einer Freigabe ergaenzt werden.",
+    "seo_keywords": ["65w gan ladegeraet", "usb c ladegeraet", "dual port charger"],
+    "attributes": {
+      "material": "polycarbonate",
+      "power_watt": 65,
+      "input_voltage": "100-240V",
+      "output_voltage": "5V/9V/12V/15V/20V",
+      "charger_type": "USB-C",
+      "ports": 2,
+      "color": "white",
+      "responsible_person": null
+    },
+    "claims": [
+      {
+        "claim_id": "clm_charger_de_001",
+        "text": "compatible with every device",
+        "claim_type": "compatibility",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_eu_gpsr_001", "rule_id": "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_electrical_power_001", "rule_id": "ELECTRICAL_POWER_FIELD_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_compatibility_scope_001", "rule_id": "COMPATIBILITY_CLAIM_NEEDS_SCOPE", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.1.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "expected-listing-fixture",
+      "temperature": 0.0
+    },
+    "status": "draft"
+  }
+]

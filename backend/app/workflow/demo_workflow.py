@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -20,15 +21,16 @@ from app.schemas import (
 from app.validators import RuleEngine
 
 
-RUN_ID = "run_demo_blender_001"
-TRACE_ID = "trc_demo_blender_001"
+BLENDER_SKU = "MRC-BLEND-450-WH"
+BLENDER_RUN_ID = "run_demo_blender_001"
+BLENDER_TRACE_ID = "trc_demo_blender_001"
 
 
 @dataclass
 class WorkflowState:
     request: DemoRunRequest
-    run_id: str = RUN_ID
-    trace_id: str = TRACE_ID
+    run_id: str = ""
+    trace_id: str = ""
     status: str = "received"
     current_state: str = "RECEIVED"
     product: Optional[ProductInput] = None
@@ -69,6 +71,8 @@ class DemoWorkflow:
                 "category_hint": product.category_hint,
             },
         )
+        state.run_id = self._run_id_for_sku(state.product.sku)
+        state.trace_id = self._trace_id_for_sku(state.product.sku)
 
         state.retrieved_chunks = trace.run_node(
             "retrieve_policies",
@@ -182,7 +186,8 @@ class DemoWorkflow:
                 "status": "blocked_until_human_review",
                 "reason": "compliance blockers must be reviewed before mock export",
             }
-        payload = self.repository.get_export_payload()
+        assert state.product is not None
+        payload = self.repository.get_export_payload(state.product.sku)
         payload["is_real_platform_request"] = False
         return payload
 
@@ -209,7 +214,7 @@ class DemoWorkflow:
         warnings = sum(report.validator_result["warning_count"] for report in state.reports)
         blockers = sum(report.validator_result["blocker_count"] for report in state.reports)
         return {
-            "prompt_version": "listing_generator_v1.0.0",
+            "prompt_version": self._prompt_version(state),
             "policy_version": "demo-policy-2026-05",
             "retrieved_chunks": [
                 {"chunk_id": chunk.chunk_id, "rule_id": chunk.rule_id, "policy_version": chunk.policy_version}
@@ -232,3 +237,20 @@ class DemoWorkflow:
 
     def _blocker_count(self, reports: List[ComplianceReport]) -> int:
         return sum(report.validator_result["blocker_count"] for report in reports)
+
+    def _prompt_version(self, state: WorkflowState) -> str:
+        versions = sorted({listing.prompt_version for listing in state.listings})
+        return versions[0] if versions else "unknown"
+
+    def _run_id_for_sku(self, sku: str) -> str:
+        if sku == BLENDER_SKU:
+            return BLENDER_RUN_ID
+        return f"run_demo_{self._normalize_id(sku)}"
+
+    def _trace_id_for_sku(self, sku: str) -> str:
+        if sku == BLENDER_SKU:
+            return BLENDER_TRACE_ID
+        return f"trc_demo_{self._normalize_id(sku)}"
+
+    def _normalize_id(self, value: str) -> str:
+        return re.sub(r"[^a-z0-9]+", "_", value.lower()).strip("_")

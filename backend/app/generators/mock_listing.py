@@ -2,23 +2,22 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, List, Optional
 
+from app.llm import LLMProvider, MockLLMProvider
+from app.llm.json_repair import validate_generated_listing_payload
 from app.repositories import DemoDataRepository
 from app.schemas import GeneratedListing, ProductInput, RagChunk, RetrievedChunkRef
 
 
-PROMPT_VERSION = "listing_generator_v1.0.0"
-MODEL_INFO = {
-    "provider": "mock_llm",
-    "model_name": "qwen3-compatible-demo",
-    "temperature": 0.2,
-}
-
-
 class MockListingGenerator:
-    """Reads expected demo listings first, then falls back to a fact-only template."""
+    """Converts LLMProvider JSON output into GeneratedListing models."""
 
-    def __init__(self, repository: DemoDataRepository) -> None:
+    def __init__(
+        self,
+        repository: DemoDataRepository,
+        llm_provider: Optional[LLMProvider] = None,
+    ) -> None:
         self.repository = repository
+        self.llm_provider = llm_provider or MockLLMProvider(repository)
 
     def generate(
         self,
@@ -30,40 +29,37 @@ class MockListingGenerator:
         trace_id: str = "trc_demo_blender_001",
     ) -> List[GeneratedListing]:
         chunks_by_id = {chunk.chunk_id: chunk for chunk in retrieved_chunks}
-        expected_by_market = {
-            listing.market_id: listing for listing in self.repository.get_expected_listings()
-        }
         language_by_market = dict(zip(target_markets, target_languages))
         listings: List[GeneratedListing] = []
 
         for market_id in target_markets:
-            expected = expected_by_market.get(market_id)
-            if expected:
-                listings.append(
-                    expected.model_copy(
-                        update={
-                            "run_id": run_id,
-                            "trace_id": trace_id,
-                            "retrieved_chunks": self._enrich_chunk_refs(
-                                expected.retrieved_chunks,
-                                chunks_by_id,
-                            ),
-                        },
-                        deep=True,
-                    )
-                )
-                continue
-
-            listings.append(
-                self._fallback_listing(
-                    product=product,
-                    market_id=market_id,
-                    language=language_by_market.get(market_id, product.target_languages[0]),
-                    retrieved_chunks=retrieved_chunks,
-                    run_id=run_id,
-                    trace_id=trace_id,
-                )
+            market_config = self.repository.get_market_config(market_id)
+            provider_result = self.llm_provider.generate_listing_json(
+                product=product,
+                market_config=market_config,
+                retrieved_chunks=retrieved_chunks,
+                prompt_version=getattr(self.llm_provider, "prompt_version", "listing_generator_v1.1.0"),
             )
+            payload = dict(provider_result.payload)
+            validation_errors = validate_generated_listing_payload(payload)
+            if validation_errors:
+                raise ValueError(f"LLM provider returned invalid listing payload: {validation_errors}")
+
+            refs = [RetrievedChunkRef.model_validate(ref) for ref in payload.get("retrieved_chunks", [])]
+            payload.update(
+                {
+                    "run_id": run_id,
+                    "trace_id": trace_id,
+                    "language": language_by_market.get(market_id, market_config.language),
+                    "prompt_version": provider_result.prompt_version,
+                    "model_info": provider_result.model_info,
+                    "retrieved_chunks": [
+                        ref.model_dump()
+                        for ref in self._enrich_chunk_refs(refs, chunks_by_id)
+                    ],
+                }
+            )
+            listings.append(GeneratedListing.model_validate(payload))
 
         return listings
 
@@ -89,56 +85,3 @@ class MockListingGenerator:
                 )
             )
         return enriched
-
-    def _fallback_listing(
-        self,
-        product: ProductInput,
-        market_id: str,
-        language: str,
-        retrieved_chunks: List[RagChunk],
-        run_id: str,
-        trace_id: str,
-    ) -> GeneratedListing:
-        required_attrs = self.repository.get_market_config(market_id).required_attributes
-        attributes = dict(product.attributes)
-        missing_fields = [field for field in required_attrs if attributes.get(field) in (None, "")]
-        for field in missing_fields:
-            attributes.setdefault(field, None)
-        if missing_fields:
-            attributes["missing_fields"] = missing_fields
-
-        title = f"{product.brand or 'Unknown'} {product.title} {attributes.get('capacity_ml', 'missing')} ml"
-        chunk_refs = [
-            RetrievedChunkRef(
-                chunk_id=chunk.chunk_id,
-                rule_id=chunk.rule_id,
-                source=chunk.source_type,
-                policy_version=chunk.policy_version,
-                score=chunk.score,
-                text=chunk.text,
-            )
-            for chunk in retrieved_chunks
-            if market_id in chunk.market_ids
-        ]
-
-        return GeneratedListing(
-            listing_id=f"lst_{product.sku.lower().replace('-', '_')}_{market_id.lower()}",
-            run_id=run_id,
-            trace_id=trace_id,
-            sku=product.sku,
-            market_id=market_id,
-            language=language,
-            title=title,
-            bullet_points=[
-                "Draft created only from provided product attributes.",
-                "Missing required fields are kept as null instead of being invented.",
-            ],
-            description=product.description or "No source description provided.",
-            seo_keywords=[],
-            attributes=attributes,
-            claims=[],
-            retrieved_chunks=chunk_refs,
-            prompt_version=PROMPT_VERSION,
-            model_info=MODEL_INFO,
-            status="draft",
-        )

@@ -1,0 +1,31 @@
+{
+  "review_id": "rev_demo_gan_charger_us",
+  "run_id": "run_demo_mrc_charger_65w",
+  "trace_id": "trc_demo_mrc_charger_65w",
+  "listing_id": "lst_demo_gan_charger_us",
+  "reviewer_id": "reviewer_demo_01",
+  "decision": "changes_requested",
+  "comments": "Scope broad compatibility claim and keep voltage fields factual.",
+  "edited_listing": {
+    "bullet_points": [
+      "65W GaN charger draft based on provided product attributes",
+      "USB-C output supports listed voltage profiles from source data",
+      "Compact white polycarbonate body for desk and travel charging",
+      "Compatibility depends on device protocol and cable support"
+    ]
+  },
+  "edit_summary": {
+    "title_changed": false,
+    "bullet_points_changed": true,
+    "description_changed": false,
+    "attributes_changed": false,
+    "estimated_edit_rate": 0.25
+  },
+  "human_review_result": {
+    "quality_score": 4,
+    "compliance_confidence": "medium",
+    "needs_regeneration": false,
+    "failure_tags": ["compatibility_claim_too_broad"]
+  },
+  "reviewed_at": "2026-05-16T10:20:00Z"
+}

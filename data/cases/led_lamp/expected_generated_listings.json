@@ -1,0 +1,94 @@
+[
+  {
+    "listing_id": "lst_demo_led_lamp_us",
+    "run_id": "run_demo_mrc_lamp_led_001",
+    "trace_id": "trc_demo_mrc_lamp_led_001",
+    "sku": "MRC-LAMP-LED-001",
+    "market_id": "US",
+    "language": "en-US",
+    "title": "Mori Adjustable LED Desk Lamp with USB-C Input",
+    "bullet_points": [
+      "Adjustable LED desk lamp for focused desk work",
+      "Three dimming levels based on provided product data",
+      "Aluminum and ABS body in a compact white design",
+      "Risk-free lighting claim requires compliance review before use"
+    ],
+    "description": "The Mori LED desk lamp is a draft listing for desk lighting use. Source data includes USB-C power input and dimming levels, but power_watt is missing and must be reviewed before any platform export.",
+    "seo_keywords": ["led desk lamp", "usb c lamp", "adjustable desk light"],
+    "attributes": {
+      "material": "aluminum and ABS",
+      "input_voltage": "5V DC",
+      "color": "white",
+      "dimming_levels": 3,
+      "energy_label": "not_provided",
+      "power_watt": null
+    },
+    "claims": [
+      {
+        "claim_id": "clm_lamp_us_001",
+        "text": "risk-free lighting claim requires compliance review",
+        "claim_type": "safety",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_electrical_power_001", "rule_id": "ELECTRICAL_POWER_FIELD_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_safety_claim_001", "rule_id": "SAFETY_CLAIM_NEEDS_EVIDENCE", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.1.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "expected-listing-fixture",
+      "temperature": 0.0
+    },
+    "status": "draft"
+  },
+  {
+    "listing_id": "lst_demo_led_lamp_de",
+    "run_id": "run_demo_mrc_lamp_led_001",
+    "trace_id": "trc_demo_mrc_lamp_led_001",
+    "sku": "MRC-LAMP-LED-001",
+    "market_id": "DE",
+    "language": "de-DE",
+    "title": "Mori verstellbare LED-Schreibtischlampe mit USB-C",
+    "bullet_points": [
+      "Verstellbare LED-Schreibtischlampe fuer konzentriertes Arbeiten",
+      "Drei Dimmstufen gemaess bereitgestellten Produktdaten",
+      "Gehaeuse aus Aluminium und ABS in Weiss",
+      "Sicherheitsbezogene Aussagen muessen vor Export geprueft werden"
+    ],
+    "description": "Die Mori LED-Schreibtischlampe ist ein Entwurf fuer den deutschen Markt. Die Leistungsangabe power_watt und die EU responsible_person fehlen und muessen vor einer Freigabe ergaenzt werden.",
+    "seo_keywords": ["led schreibtischlampe", "usb c lampe", "verstellbare lampe"],
+    "attributes": {
+      "material": "aluminum and ABS",
+      "input_voltage": "5V DC",
+      "color": "white",
+      "dimming_levels": 3,
+      "energy_label": "not_provided",
+      "power_watt": null,
+      "responsible_person": null
+    },
+    "claims": [
+      {
+        "claim_id": "clm_lamp_de_001",
+        "text": "Sicherheitsbezogene Aussagen muessen geprueft werden",
+        "claim_type": "safety",
+        "source_attribute": null
+      }
+    ],
+    "retrieved_chunks": [
+      {"chunk_id": "policy_eu_gpsr_001", "rule_id": "EU_GPSR_RESPONSIBLE_PERSON_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_electrical_power_001", "rule_id": "ELECTRICAL_POWER_FIELD_REQUIRED", "source": "mock_policy_pack"},
+      {"chunk_id": "policy_safety_claim_001", "rule_id": "SAFETY_CLAIM_NEEDS_EVIDENCE", "source": "mock_policy_pack"},
+      {"chunk_id": "term_brand_001", "rule_id": "BRAND_TERM_DO_NOT_TRANSLATE", "source": "brand_terms"}
+    ],
+    "prompt_version": "listing_generator_v1.1.0",
+    "model_info": {
+      "provider": "mock_llm",
+      "model_name": "expected-listing-fixture",
+      "temperature": 0.0
+    },
+    "status": "draft"
+  }
+]

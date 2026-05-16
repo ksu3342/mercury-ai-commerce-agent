@@ -1,0 +1,25 @@
+{
+  "export_id": "exp_demo_led_lamp_001",
+  "run_id": "run_demo_mrc_lamp_led_001",
+  "trace_id": "trc_demo_mrc_lamp_led_001",
+  "export_type": "shopify_like_json",
+  "is_real_platform_request": false,
+  "status": "adapter_payload_draft",
+  "items": [
+    {
+      "sku": "MRC-LAMP-LED-001",
+      "market_id": "US",
+      "language": "en-US",
+      "handle": "mori-led-desk-lamp-us",
+      "title": "Mori Adjustable LED Desk Lamp with USB-C Input",
+      "vendor": "Mori",
+      "body_html": "<p>Draft adapter payload only. Not a Shopify Admin API request.</p>",
+      "tags": ["led_lamp", "electrical", "mock_export"],
+      "metafields": {
+        "material": "aluminum and ABS",
+        "input_voltage": "5V DC",
+        "power_watt": null
+      }
+    }
+  ]
+}
